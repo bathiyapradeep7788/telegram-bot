@@ -1,0 +1,25 @@
+name: Telegram bot
+
+# Run workflow button eken on karanna. GitHub walin job ekak max wenakan (6h) yanawa, passe auto off wenawa.
+# Cancel karanna: Actions page eke "Cancel workflow" (nathnam Streamlit app eke Stop button).
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: telegram-bot
+  cancel-in-progress: false   # ekak run wenakota aluth ekak start unoth queue wenawa (polling conflict walakwanna)
+
+jobs:
+  bot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350       # GitHub limit eka 360 -> eken kalin off wenawa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python tele.py
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
